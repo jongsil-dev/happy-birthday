@@ -230,6 +230,73 @@
       box-shadow: 0 6px 16px rgba(255, 51, 109, 0.28);
     }
 
+    /* 카운트다운 잠금 박스 */
+    .lock-box {
+      background: linear-gradient(145deg, #fff5f8 0%, #ffeaf1 100%);
+      border: 1.5px dashed rgba(255, 71, 126, 0.35);
+      border-radius: 20px;
+      padding: 18px 14px;
+      margin-bottom: 22px;
+    }
+
+    .lock-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--rose-dark);
+      margin-bottom: 10px;
+    }
+
+    .countdown {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .cd-unit {
+      min-width: 64px;
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 10px 6px;
+      box-shadow: 0 4px 12px rgba(255, 71, 126, 0.1);
+      border: 1px solid rgba(255, 71, 126, 0.14);
+    }
+
+    .cd-num {
+      display: block;
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--rose-dark);
+      line-height: 1.1;
+    }
+
+    .cd-txt {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .cd-sep {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--rose-soft);
+      margin-bottom: 14px;
+    }
+
+    .open-btn:disabled {
+      background: linear-gradient(135deg, #e5ccd4 0%, #d4b4bf 100%);
+      box-shadow: none;
+      cursor: not-allowed;
+      color: #ffffff;
+    }
+
+    .open-btn:disabled::after {
+      display: none;
+    }
+
     /* 축하 공개 화면 */
     .hidden {
       display: none !important;
@@ -362,11 +429,31 @@
         </svg>
       </div>
 
-      <h1 class="intro-title">오늘의 주인공에게<br />생일 축하가 도착했어요</h1>
-      <p class="intro-sub">아래 버튼을 눌러서<br />도착한 메시지와 축하를 받아보세요</p>
+      <h1 class="intro-title" id="introTitle">아직은 비밀이에요 🤫<br />오늘 밤 12시에 공개돼요</h1>
+      <p class="intro-sub" id="introSub">조금만 기다려 주세요!<br />자정이 되면 선물이 열립니다</p>
 
-      <button class="open-btn" id="openBtn" type="button">
-        🎂 생일 축하 받기
+      <div class="lock-box" id="lockBox">
+        <div class="lock-label">🎁 11월 26일 00:00 오픈까지</div>
+        <div class="countdown" aria-live="polite">
+          <div class="cd-unit">
+            <span class="cd-num" id="cdHours">00</span>
+            <span class="cd-txt">시간</span>
+          </div>
+          <span class="cd-sep">:</span>
+          <div class="cd-unit">
+            <span class="cd-num" id="cdMins">00</span>
+            <span class="cd-txt">분</span>
+          </div>
+          <span class="cd-sep">:</span>
+          <div class="cd-unit">
+            <span class="cd-num" id="cdSecs">00</span>
+            <span class="cd-txt">초</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="open-btn" id="openBtn" type="button" disabled>
+        🔒 밤 12시(00:00)에 열려요
       </button>
     </section>
 
@@ -594,9 +681,18 @@
       }
     }
 
-    // 4. 화면 전환 및 인터랙션
+    // 4. 자정(2026-11-26 00:00:00 KST) 잠금 & 카운트다운
+    const UNLOCK_TIME = new Date("2026-11-26T00:00:00+09:00").getTime();
+    const isPreviewOpen = new URLSearchParams(window.location.search).get("preview") === "open";
+
     const introCard = document.getElementById("introCard");
     const celebrateCard = document.getElementById("celebrateCard");
+    const introTitle = document.getElementById("introTitle");
+    const introSub = document.getElementById("introSub");
+    const lockBox = document.getElementById("lockBox");
+    const cdHours = document.getElementById("cdHours");
+    const cdMins = document.getElementById("cdMins");
+    const cdSecs = document.getElementById("cdSecs");
     const openBtn = document.getElementById("openBtn");
     const giftTap = document.getElementById("giftTap");
     const replayBtn = document.getElementById("replayBtn");
@@ -609,8 +705,48 @@
       document.getElementById("flame3")
     ];
     let candlesLit = true;
+    let isUnlocked = false;
+    let countdownTimer = null;
+
+    function applyUnlockedState() {
+      isUnlocked = true;
+      if (countdownTimer) {
+        clearInterval(countdownTimer);
+        countdownTimer = null;
+      }
+      lockBox.classList.add("hidden");
+      introTitle.innerHTML = "오늘의 주인공에게<br />생일 축하가 도착했어요";
+      introSub.innerHTML = "아래 버튼을 눌러서<br />도착한 메시지와 축하를 받아보세요";
+      openBtn.disabled = false;
+      openBtn.textContent = "🎂 생일 축하 받기";
+    }
+
+    function updateCountdown() {
+      if (isPreviewOpen) {
+        applyUnlockedState();
+        return;
+      }
+      const diff = UNLOCK_TIME - Date.now();
+      if (diff <= 0) {
+        applyUnlockedState();
+        return;
+      }
+      const totalSec = Math.floor(diff / 1000);
+      const h = Math.floor(totalSec / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      const s = totalSec % 60;
+      cdHours.textContent = String(h).padStart(2, "0");
+      cdMins.textContent = String(m).padStart(2, "0");
+      cdSecs.textContent = String(s).padStart(2, "0");
+    }
+
+    updateCountdown();
+    if (!isUnlocked) {
+      countdownTimer = setInterval(updateCountdown, 500);
+    }
 
     function openCelebration() {
+      if (!isUnlocked) return;
       introCard.classList.add("hidden");
       celebrateCard.classList.remove("hidden");
       celebrateCard.classList.add("reveal-anim");
