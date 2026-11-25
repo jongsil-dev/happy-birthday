@@ -374,7 +374,7 @@
       <span class="badge">MIDNIGHT COUNTDOWN</span>
       <span class="timer-icon">⏳</span>
       <h1 class="timer-title">오늘 밤 12시에 열려요</h1>
-      <p class="timer-sub">11월 26일 00:00 (KST) 오픈까지</p>
+      <p class="timer-sub">11월 26일 00:00 오픈까지</p>
 
       <div class="countdown" aria-live="polite">
         <div class="cd-unit">
@@ -586,7 +586,7 @@
       } catch (e) {}
     }
 
-    const UNLOCK_TIME = new Date("2026-11-26T00:00:00+09:00").getTime();
+    const UNLOCK_TIME = new Date("2026-11-26T00:00:00+08:00").getTime();
     const isPreviewOpen = new URLSearchParams(window.location.search).get("preview") === "open";
     const timerCard = document.getElementById("timerCard");
     const introCard = document.getElementById("introCard");

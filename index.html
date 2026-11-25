@@ -682,7 +682,7 @@
     }
 
     // 4. 자정(2026-11-26 00:00:00 KST) 잠금 & 카운트다운
-    const UNLOCK_TIME = new Date("2026-11-26T00:00:00+09:00").getTime();
+    const UNLOCK_TIME = new Date("2026-11-26T00:00:00+08:00").getTime();
     const isPreviewOpen = new URLSearchParams(window.location.search).get("preview") === "open";
 
     const introCard = document.getElementById("introCard");
