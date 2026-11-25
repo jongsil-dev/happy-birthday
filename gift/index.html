@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>✨ 11월 26일 00:00 공개</title>
+  <meta property="og:title" content="💌 오늘 밤 12시에 열리는 페이지" />
+  <meta property="og:description" content="자정이 되면 특별한 메시지가 공개됩니다 ✨" />
+  <meta name="theme-color" content="#ff6b8b" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --bg-top: #fff6f8;
+      --bg-mid: #ffe8ef;
+      --bg-bot: #ffdce7;
+      --rose: #ff477e;
+      --rose-dark: #e63268;
+      --rose-soft: #ff85a1;
+      --ink: #3b1d2a;
+      --muted: #7a4b5c;
+      --card: rgba(255, 255, 255, 0.94);
+    }
+
+    html, body {
+      width: 100%;
+      min-height: 100dvh;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at 50% 25%, #1d1912 0%, #0b0b0e 70%, #050507 100%);
+      overflow-x: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.8s ease;
+    }
+
+    body.unlocked {
+      background: linear-gradient(160deg, var(--bg-top) 0%, var(--bg-mid) 50%, var(--bg-bot) 100%);
+    }
+
+    .bg-floaters {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .floater {
+      position: absolute;
+      bottom: -40px;
+      opacity: 0;
+      animation: floatUp linear infinite;
+      user-select: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(0.8); opacity: 0; }
+      15% { opacity: 0.4; }
+      85% { opacity: 0.3; }
+      100% { transform: translateY(-110dvh) scale(1.1); opacity: 0; }
+    }
+
+    #confettiCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    .sound-btn {
+      position: fixed;
+      top: max(16px, env(safe-area-inset-top));
+      right: 16px;
+      z-index: 30;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(255, 71, 126, 0.25);
+      background: rgba(255, 255, 255, 0.9);
+      font-size: 20px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(255, 71, 126, 0.16);
+    }
+
+    .sound-btn.visible { display: flex; }
+
+    .stage {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 420px;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      width: 100%;
+      background: var(--card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 28px;
+      padding: 36px 24px 32px;
+      text-align: center;
+      box-shadow:
+        0 20px 50px rgba(230, 50, 104, 0.14),
+        0 4px 14px rgba(255, 133, 161, 0.15),
+        inset 0 0 0 1.5px rgba(255, 255, 255, 0.85);
+    }
+
+    .hidden { display: none !important; }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: #fff0f4;
+      color: var(--rose);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 71, 126, 0.18);
+    }
+
+    /* 자정 전: 블랙 & 골드 시간표 */
+    .card.timer-dark {
+      background: rgba(18, 17, 15, 0.92);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.75),
+        0 0 36px rgba(212, 175, 55, 0.12),
+        inset 0 0 0 1px rgba(247, 217, 126, 0.12);
+    }
+
+    .timer-dark .badge {
+      background: rgba(212, 175, 55, 0.12);
+      color: #f3d57a;
+      border-color: rgba(212, 175, 55, 0.38);
+      letter-spacing: 0.1em;
+    }
+
+    .timer-icon {
+      font-size: 40px;
+      margin-bottom: 14px;
+      display: block;
+      filter: drop-shadow(0 0 10px rgba(243, 213, 122, 0.35));
+    }
+
+    .timer-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #f8e7b3;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .timer-sub {
+      font-size: 13.5px;
+      color: #b7a372;
+      margin-bottom: 26px;
+      line-height: 1.5;
+    }
+
+    .countdown {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-variant-numeric: tabular-nums;
+      background: linear-gradient(145deg, rgba(28, 25, 19, 0.96) 0%, rgba(15, 14, 12, 0.98) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      border-radius: 22px;
+      padding: 22px 12px;
+      box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.06);
+    }
+
+    .cd-unit {
+      min-width: 70px;
+      background: rgba(10, 10, 12, 0.85);
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      border-radius: 15px;
+      padding: 13px 6px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+    }
+
+    .cd-num {
+      display: block;
+      font-size: 30px;
+      font-weight: 900;
+      background: linear-gradient(180deg, #fff3c4 0%, #f0c95c 52%, #c9972c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      line-height: 1.1;
+    }
+
+    .cd-txt {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #bfa76a;
+      margin-top: 5px;
+    }
+
+    .cd-sep {
+      font-size: 22px;
+      font-weight: 800;
+      color: #d4af37;
+      margin-bottom: 16px;
+    }
+
+    /* 자정 후: 선물 & 축하 화면 */
+    .gift-wrap {
+      width: 132px;
+      height: 132px;
+      margin: 4px auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: giftBounce 2.2s ease-in-out infinite;
+      cursor: pointer;
+    }
+
+    @keyframes giftBounce {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      25% { transform: translateY(-7px) rotate(-2deg); }
+      50% { transform: translateY(0) rotate(0deg); }
+      75% { transform: translateY(-4px) rotate(2deg); }
+    }
+
+    .intro-title {
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.38;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+    }
+
+    .intro-sub {
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--muted);
+      margin-bottom: 26px;
+    }
+
+    .open-btn {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      padding: 17px 22px;
+      border: none;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #ff5c8d 0%, #ff336d 100%);
+      color: #ffffff;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(255, 51, 109, 0.34);
+    }
+
+    .open-btn::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -80%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.38), transparent);
+      transform: skewX(-22deg);
+      animation: sheen 2.8s infinite;
+    }
+
+    @keyframes sheen {
+      0%, 60% { left: -80%; }
+      100% { left: 140%; }
+    }
+
+    .reveal-anim {
+      animation: popIn 0.55s cubic-bezier(0.18, 1.25, 0.32, 1) forwards;
+    }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.86) translateY(16px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .cake-wrap {
+      width: 156px;
+      height: 146px;
+      margin: 0 auto 14px;
+      cursor: pointer;
+    }
+
+    .flame {
+      transform-origin: center bottom;
+      animation: flicker 0.9s ease-in-out infinite alternate;
+    }
+    .flame.delay1 { animation-delay: 0.2s; }
+    .flame.delay2 { animation-delay: 0.45s; }
+    .flame.out { opacity: 0; transform: scale(0); transition: all 0.25s ease; }
+
+    @keyframes flicker {
+      0% { transform: scale(1) rotate(-2deg); opacity: 0.95; }
+      100% { transform: scale(1.08, 1.15) rotate(2deg); opacity: 1; }
+    }
+
+    .cake-hint {
+      font-size: 11.5px;
+      color: #a17182;
+      margin-bottom: 18px;
+    }
+
+    .main-msg-box {
+      background: linear-gradient(145deg, #fff5f8 0%, #ffeaf1 100%);
+      border: 1.5px solid rgba(255, 71, 126, 0.22);
+      border-radius: 20px;
+      padding: 22px 18px;
+      margin-bottom: 20px;
+    }
+
+    .main-msg {
+      font-size: 27px;
+      font-weight: 900;
+      line-height: 1.3;
+      letter-spacing: -0.02em;
+      color: var(--rose-dark);
+      margin-bottom: 12px;
+      word-break: keep-all;
+    }
+
+    .sub-msg {
+      font-size: 15.5px;
+      line-height: 1.65;
+      color: #5c3242;
+      font-weight: 500;
+      word-break: keep-all;
+    }
+
+    .replay-btn {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 15px;
+      border: 1.5px solid rgba(255, 71, 126, 0.28);
+      background: #ffffff;
+      color: var(--rose-dark);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-floaters" id="bgFloaters" aria-hidden="true"></div>
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+  <button class="sound-btn" id="soundBtn" type="button" aria-label="음악 켜기/끄기">🔊</button>
+
+  <main class="stage">
+    <!-- 1. 자정 전: 블랙 & 골드 시간표만 깔끔하게 보여주는 카드 -->
+    <section class="card timer-dark" id="timerCard">
+      <span class="badge">MIDNIGHT COUNTDOWN</span>
+      <span class="timer-icon">⏳</span>
+      <h1 class="timer-title">오늘 밤 12시에 열려요</h1>
+      <p class="timer-sub">11월 26일 00:00 (KST) 오픈까지</p>
+
+      <div class="countdown" aria-live="polite">
+        <div class="cd-unit">
+          <span class="cd-num" id="cdHours">--</span>
+          <span class="cd-txt">시간</span>
+        </div>
+        <span class="cd-sep">:</span>
+        <div class="cd-unit">
+          <span class="cd-num" id="cdMins">--</span>
+          <span class="cd-txt">분</span>
+        </div>
+        <span class="cd-sep">:</span>
+        <div class="cd-unit">
+          <span class="cd-num" id="cdSecs">--</span>
+          <span class="cd-txt">초</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 자정 이후: 버튼 화면 -->
+    <section class="card hidden" id="introCard">
+      <span class="badge">SPECIAL DELIVERY 💌</span>
+      <div class="gift-wrap" id="giftTap" role="button" tabindex="0" aria-label="선물 상자 열기">
+        <svg viewBox="0 0 120 120" width="124" height="124" fill="none">
+          <ellipse cx="60" cy="106" rx="38" ry="7" fill="#f9c6d7" opacity="0.6" />
+          <rect x="24" y="52" width="72" height="50" rx="10" fill="#ff5c8d" />
+          <rect x="24" y="52" width="72" height="12" fill="#e63268" opacity="0.22" />
+          <rect x="53" y="52" width="14" height="50" fill="#ffd166" />
+          <rect x="19" y="38" width="82" height="18" rx="7" fill="#ff759f" />
+          <rect x="53" y="38" width="14" height="18" fill="#ffe08a" />
+          <path d="M60 38C50 22 33 22 35 33C36 40 50 40 60 38Z" fill="#ffd166" stroke="#f59e0b" stroke-width="1.5" />
+          <path d="M60 38C70 22 87 22 85 33C84 40 70 40 60 38Z" fill="#ffd166" stroke="#f59e0b" stroke-width="1.5" />
+          <circle cx="60" cy="37" r="6" fill="#f59e0b" />
+        </svg>
+      </div>
+      <h1 class="intro-title">오늘의 주인공에게<br />생일 축하가 도착했어요</h1>
+      <p class="intro-sub">아래 버튼을 눌러서<br />도착한 메시지와 축하를 받아보세요</p>
+      <button class="open-btn" id="openBtn" type="button">🎂 생일 축하 받기</button>
+    </section>
+
+    <!-- 3. 버튼 누른 후 축하 화면 -->
+    <section class="card hidden" id="celebrateCard">
+      <span class="badge">HAPPY BIRTHDAY 🎉</span>
+      <div class="cake-wrap" id="cakeWrap" role="button" tabindex="0" aria-label="케이크 촛불 끄기 또는 켜기">
+        <svg viewBox="0 0 160 150" width="156" height="146" fill="none">
+          <ellipse cx="80" cy="134" rx="64" ry="10" fill="#f8c8d8" />
+          <ellipse cx="80" cy="131" rx="60" ry="8" fill="#ffffff" />
+          <rect x="28" y="92" width="104" height="38" rx="12" fill="#ff85a1" />
+          <path d="M28 102C38 109 48 109 58 102C68 95 78 95 88 102C98 109 108 109 118 102C124 98 128 99 132 102V92H28V102Z" fill="#fff8fa" />
+          <rect x="44" y="60" width="72" height="34" rx="10" fill="#ffb3c6" />
+          <path d="M44 68C52 75 60 75 68 68C76 61 84 61 92 68C100 75 108 75 116 68V60H44V68Z" fill="#ffffff" />
+          <circle cx="58" cy="79" r="2.5" fill="#ffd166" />
+          <circle cx="80" cy="83" r="2.5" fill="#ff477e" />
+          <circle cx="102" cy="78" r="2.5" fill="#6ee7b7" />
+          <circle cx="48" cy="116" r="3" fill="#ffd166" />
+          <circle cx="80" cy="118" r="3" fill="#ffffff" />
+          <circle cx="112" cy="115" r="3" fill="#ffd166" />
+          <rect x="57" y="36" width="6" height="24" rx="3" fill="#ffd166" />
+          <rect x="77" y="32" width="6" height="28" rx="3" fill="#ff5c8d" />
+          <rect x="97" y="36" width="6" height="24" rx="3" fill="#7dd3fc" />
+          <line x1="60" y1="36" x2="60" y2="31" stroke="#4a2c38" stroke-width="1.8" />
+          <line x1="80" y1="32" x2="80" y2="27" stroke="#4a2c38" stroke-width="1.8" />
+          <line x1="100" y1="36" x2="100" y2="31" stroke="#4a2c38" stroke-width="1.8" />
+          <g class="flame" id="flame1">
+            <path d="M60 15C65 22 65 29 60 31C55 29 55 22 60 15Z" fill="#fb923c" />
+            <path d="M60 20C62.5 24 62.5 28 60 29.5C57.5 28 57.5 24 60 20Z" fill="#fef08a" />
+          </g>
+          <g class="flame delay1" id="flame2">
+            <path d="M80 10C85.5 18 85.5 25 80 27C74.5 25 74.5 18 80 10Z" fill="#fb923c" />
+            <path d="M80 16C82.5 20 82.5 24 80 25.5C77.5 24 77.5 20 80 16Z" fill="#fef08a" />
+          </g>
+          <g class="flame delay2" id="flame3">
+            <path d="M100 15C105 22 105 29 100 31C95 29 95 22 100 15Z" fill="#fb923c" />
+            <path d="M100 20C102.5 24 102.5 28 100 29.5C97.5 28 97.5 24 100 20Z" fill="#fef08a" />
+          </g>
+        </svg>
+      </div>
+      <p class="cake-hint" id="cakeHint">케이크를 터치하면 촛불을 껐다 켤 수 있어요 ✨</p>
+      <div class="main-msg-box">
+        <h1 class="main-msg">🎂 쟈기 생일축하해 💝</h1>
+        <p class="sub-msg">나와 같이 즐거운 휴가 보내자 ✨</p>
+      </div>
+      <button class="replay-btn" id="replayBtn" type="button">🎉 한 번 더 축하 터뜨리기</button>
+    </section>
+  </main>
+
+  <script>
+    (function initFloaters() {
+      const container = document.getElementById("bgFloaters");
+      const icons = ["💖", "✨", "⏳", "💝", "🌸"];
+      for (let i = 0; i < 14; i++) {
+        const el = document.createElement("span");
+        el.className = "floater";
+        el.textContent = icons[i % icons.length];
+        el.style.left = Math.random() * 100 + "%";
+        el.style.fontSize = (14 + Math.random() * 12) + "px";
+        el.style.animationDuration = (7 + Math.random() * 7) + "s";
+        el.style.animationDelay = (-Math.random() * 10) + "s";
+        container.appendChild(el);
+      }
+    })();
+
+    const canvas = document.getElementById("confettiCanvas");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
+    let animId = null;
+
+    function resizeCanvas() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    const CONFETTI_COLORS = ["#ff477e", "#ff85a1", "#ffd166", "#6ee7b7", "#7dd3fc", "#c084fc", "#fbbf24"];
+
+    function launchConfetti(count = 130) {
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      for (let i = 0; i < count; i++) {
+        const angle = -Math.PI / 2 + (Math.random() - 0.5) * 1.55;
+        const speed = 5 + Math.random() * 11;
+        particles.push({
+          x: w * (0.2 + Math.random() * 0.6),
+          y: h * 0.48,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 2,
+          size: 6 + Math.random() * 7,
+          color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+          rot: Math.random() * Math.PI * 2,
+          vRot: (Math.random() - 0.5) * 0.24,
+          shape: Math.random() < 0.25 ? "circle" : "rect",
+          alpha: 1
+        });
+      }
+      if (!animId) tickConfetti();
+    }
+
+    function tickConfetti() {
+      ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+      particles = particles.filter((p) => p.alpha > 0.02 && p.y < window.innerHeight + 30);
+      for (const p of particles) {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.24;
+        p.vx *= 0.985;
+        p.rot += p.vRot;
+        if (p.y > window.innerHeight * 0.72) p.alpha -= 0.018;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.alpha);
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        if (p.shape === "circle") {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size * 0.45, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillRect(-p.size / 2, -p.size * 0.3, p.size, p.size * 0.6);
+        }
+        ctx.restore();
+      }
+      if (particles.length > 0) animId = requestAnimationFrame(tickConfetti);
+      else { animId = null; ctx.clearRect(0, 0, window.innerWidth, window.innerHeight); }
+    }
+
+    let audioCtx = null;
+    let isMuted = false;
+    let songTimers = [];
+    const NOTES = { C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, Bb4: 466.16, C5: 523.25 };
+    const HAPPY_BIRTHDAY = [
+      ["C4", 0.32], ["C4", 0.18], ["D4", 0.50], ["C4", 0.50], ["F4", 0.50], ["E4", 0.95],
+      ["C4", 0.32], ["C4", 0.18], ["D4", 0.50], ["C4", 0.50], ["G4", 0.50], ["F4", 0.95],
+      ["C4", 0.32], ["C4", 0.18], ["C5", 0.50], ["A4", 0.50], ["F4", 0.50], ["E4", 0.50], ["D4", 0.85],
+      ["Bb4", 0.32], ["Bb4", 0.18], ["A4", 0.50], ["F4", 0.50], ["G4", 0.50], ["F4", 1.10]
+    ];
+
+    function stopSong() { songTimers.forEach(clearTimeout); songTimers = []; }
+    function playTone(freq, duration) {
+      if (!audioCtx || isMuted) return;
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(freq, now);
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.exponentialRampToValueAtTime(0.22, now + 0.025);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + duration * 0.95);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + duration);
+    }
+    function playHappyBirthday() {
+      stopSong();
+      if (isMuted) return;
+      try {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) return;
+        if (!audioCtx) audioCtx = new AudioContextClass();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        let elapsed = 80;
+        HAPPY_BIRTHDAY.forEach(([note, dur]) => {
+          songTimers.push(setTimeout(() => playTone(NOTES[note], dur), elapsed));
+          elapsed += dur * 1000 * 0.88;
+        });
+      } catch (e) {}
+    }
+
+    const UNLOCK_TIME = new Date("2026-11-26T00:00:00+09:00").getTime();
+    const isPreviewOpen = new URLSearchParams(window.location.search).get("preview") === "open";
+    const timerCard = document.getElementById("timerCard");
+    const introCard = document.getElementById("introCard");
+    const celebrateCard = document.getElementById("celebrateCard");
+    const cdHours = document.getElementById("cdHours");
+    const cdMins = document.getElementById("cdMins");
+    const cdSecs = document.getElementById("cdSecs");
+    const openBtn = document.getElementById("openBtn");
+    const giftTap = document.getElementById("giftTap");
+    const replayBtn = document.getElementById("replayBtn");
+    const soundBtn = document.getElementById("soundBtn");
+    const cakeWrap = document.getElementById("cakeWrap");
+    const cakeHint = document.getElementById("cakeHint");
+    const flames = [document.getElementById("flame1"), document.getElementById("flame2"), document.getElementById("flame3")];
+    let candlesLit = true;
+    let countdownTimer = null;
+
+    function unlockPage() {
+      if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+      document.body.classList.add("unlocked");
+      timerCard.classList.add("hidden");
+      introCard.classList.remove("hidden");
+      introCard.classList.add("reveal-anim");
+    }
+
+    function updateCountdown() {
+      if (isPreviewOpen || Date.now() >= UNLOCK_TIME) {
+        unlockPage();
+        return;
+      }
+      const totalSec = Math.floor((UNLOCK_TIME - Date.now()) / 1000);
+      cdHours.textContent = String(Math.floor(totalSec / 3600)).padStart(2, "0");
+      cdMins.textContent = String(Math.floor((totalSec % 3600) / 60)).padStart(2, "0");
+      cdSecs.textContent = String(totalSec % 60).padStart(2, "0");
+    }
+
+    updateCountdown();
+    if (Date.now() < UNLOCK_TIME && !isPreviewOpen) {
+      countdownTimer = setInterval(updateCountdown, 500);
+    }
+
+    function openCelebration() {
+      introCard.classList.add("hidden");
+      celebrateCard.classList.remove("hidden");
+      celebrateCard.classList.add("reveal-anim");
+      soundBtn.classList.add("visible");
+      launchConfetti(140);
+      playHappyBirthday();
+    }
+
+    openBtn.addEventListener("click", openCelebration);
+    giftTap.addEventListener("click", openCelebration);
+    replayBtn.addEventListener("click", () => { launchConfetti(120); playHappyBirthday(); });
+    soundBtn.addEventListener("click", () => {
+      isMuted = !isMuted;
+      soundBtn.textContent = isMuted ? "🔇" : "🔊";
+      if (isMuted) stopSong();
+      else playHappyBirthday();
+    });
+    cakeWrap.addEventListener("click", () => {
+      candlesLit = !candlesLit;
+      flames.forEach((f) => f.classList.toggle("out", !candlesLit));
+      cakeHint.textContent = candlesLit
+        ? "케이크를 터치하면 촛불을 껐다 켤 수 있어요 ✨"
+        : "후~ 소원을 빌었어요! 다시 터치하면 켜져요 🕯️";
+      if (!candlesLit) launchConfetti(60);
+    });
+  </script>
+</body>
+</html>
